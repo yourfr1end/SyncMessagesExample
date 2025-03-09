@@ -1,0 +1,6 @@
+@SyncMessagesExample_HostAddress = http://localhost:5234
+
+GET {{SyncMessagesExample_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

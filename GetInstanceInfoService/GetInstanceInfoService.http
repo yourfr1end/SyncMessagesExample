@@ -1,0 +1,6 @@
+@GetInstanceInfoService_HostAddress = http://localhost:5110
+
+GET {{GetInstanceInfoService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
