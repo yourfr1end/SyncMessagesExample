@@ -17,8 +17,12 @@ public class SyncMessagesState : SagaStateMachineInstance
 
 public class SyncMessagesStateMachine : MassTransitStateMachine<SyncMessagesState>
 {
-    public SyncMessagesStateMachine()
+    private readonly ILogger<SyncMessagesStateMachine> _logger;
+
+    public SyncMessagesStateMachine(ILogger<SyncMessagesStateMachine> logger)
     {
+        _logger = logger;
+
         InstanceState(x => x.CurrentState);
 
         Event(() => SyncInstanceSubmitted, x => x.CorrelateById(m => m.Message.InstanceId));
@@ -31,6 +35,9 @@ public class SyncMessagesStateMachine : MassTransitStateMachine<SyncMessagesStat
         Initially(When(SyncInstanceSubmitted)
             .Then(context =>
             {
+                _logger.LogInformation("Initializing statemachine for instance = {InstanceId}",
+                    context.Message.InstanceId);
+
                 context.Saga.InstanceId = context.Message.InstanceId;
                 context.Saga.StartSyncing = DateTime.UtcNow;
             })
@@ -47,6 +54,8 @@ public class SyncMessagesStateMachine : MassTransitStateMachine<SyncMessagesStat
             When(SyncFailed)
                 .Then(context =>
                 {
+                    _logger.LogError("Sync failed for Instance = {InstanceId}. With message = {Message}",
+                        context.Message.InstanceId, context.Message.Message);
                     context.Saga.EndSyncing = DateTime.UtcNow;
                     context.Saga.FailedReason = context.Message.Message;
                 })
@@ -63,6 +72,8 @@ public class SyncMessagesStateMachine : MassTransitStateMachine<SyncMessagesStat
             When(SyncFailed)
                 .Then(context =>
                 {
+                    _logger.LogError("Sync failed for Instance = {InstanceId}. With message = {Message}",
+                        context.Message.InstanceId, context.Message.Message);
                     context.Saga.EndSyncing = DateTime.UtcNow;
                     context.Saga.FailedReason = context.Message.Message;
                 })
@@ -84,6 +95,8 @@ public class SyncMessagesStateMachine : MassTransitStateMachine<SyncMessagesStat
             When(SyncFailed)
                 .Then(context =>
                 {
+                    _logger.LogError("Sync failed for Instance = {InstanceId}. With message = {Message}",
+                        context.Message.InstanceId, context.Message.Message);
                     context.Saga.EndSyncing = DateTime.UtcNow;
                     context.Saga.FailedReason = context.Message.Message;
                 })
@@ -93,12 +106,20 @@ public class SyncMessagesStateMachine : MassTransitStateMachine<SyncMessagesStat
 
         During(UpdatingMessagesStatus,
             When(MessagesUpdated)
-                .Then(context => { context.Saga.EndSyncing = DateTime.UtcNow; })
+                .Then(context =>
+                {
+                    _logger.LogInformation("Messages statuses updated for Instance = {InstanceId}",
+                        context.Message.InstanceId);
+
+                    context.Saga.EndSyncing = DateTime.UtcNow;
+                })
                 .TransitionTo(Completed)
                 .Finalize(),
             When(SyncFailed)
                 .Then(context =>
                 {
+                    _logger.LogError("Sync failed for Instance = {InstanceId}. With message = {Message}",
+                        context.Message.InstanceId, context.Message.Message);
                     context.Saga.EndSyncing = DateTime.UtcNow;
                     context.Saga.FailedReason = context.Message.Message;
                 })

@@ -16,7 +16,9 @@ public class UpdateMessageConsumer : IConsumer<IUpdateMessages>
 
     public async Task Consume(ConsumeContext<IUpdateMessages> context)
     {
-        _logger.LogInformation("Updating messages statuses for instance = {InsanceId}", context.Message.InstanceId);
+        _logger.LogInformation("Updating messages statuses for instance = {InstanceId}", context.Message.InstanceId);
+
+        await Task.Delay(1000);
 
         if (Random.Shared.Next(100) < 95)
         {

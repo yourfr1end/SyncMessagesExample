@@ -1,31 +1,28 @@
 using Common.Events;
+using Common.Infrastructure;
 using MassTransit;
+using MassTransit.Logging;
 using MassTransit.Saga;
 using Microsoft.AspNetCore.Mvc;
+using OpenTelemetry;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using SyncMessagesExample.Api;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddCustomOpenTelemetry("SyncMessagesExample.Api");
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddMassTransit(x =>
-{
+builder.AddCustomMasstransit(x =>
     x.AddSagaStateMachine<SyncMessagesStateMachine, SyncMessagesState>()
-        .InMemoryRepository();
-
-    x.UsingRabbitMq((context, cfg) =>
-    {
-        cfg.Host("localhost", "/", h =>
-        {
-            h.Username("guest");
-            h.Password("guest");
-        });
-        cfg.ConfigureEndpoints(context);
-    });
-});
+        .InMemoryRepository()
+);
 
 var app = builder.Build();
 
@@ -40,7 +37,7 @@ app.UseHttpsRedirection();
 
 app.MapPost("/start-syncing", (IPublishEndpoint publishEndpoint) =>
     {
-        var guid =  Guid.NewGuid();
+        var guid = Guid.NewGuid();
         publishEndpoint.Publish<ISubmitSync>(new SubmitSync(guid));
 
         return Results.Ok(guid);
@@ -49,7 +46,7 @@ app.MapPost("/start-syncing", (IPublishEndpoint publishEndpoint) =>
     .WithOpenApi();
 
 app.MapGet("/get-saga/{correlationId}", async (ILoadSagaRepository<SyncMessagesState> repo,
-    [FromQuery]Guid correlationId) =>
+        [FromQuery] Guid correlationId) =>
     {
         var state = await repo.Load(correlationId);
         return state;
