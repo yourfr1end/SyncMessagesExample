@@ -3,6 +3,9 @@ using MassTransit;
 using MessageStatusService.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddEnvironmentVariables();
+
 builder.AddCustomOpenTelemetry("MessageStatusService");
 
 // Add services to the container.

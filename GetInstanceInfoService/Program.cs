@@ -3,6 +3,9 @@ using GetInstanceInfoService.Consumers;
 using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddEnvironmentVariables();
+
 builder.AddCustomOpenTelemetry("GetInstanceInfoService");
 
 // Add services to the container.

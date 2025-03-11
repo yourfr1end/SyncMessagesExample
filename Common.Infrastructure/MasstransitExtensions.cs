@@ -14,7 +14,7 @@ public static class MasstransitExtensions
 
             x.UsingRabbitMq((context, cfg) =>
             {
-                cfg.Host("localhost", "/", h =>
+                cfg.Host("messagebroker-sevice","/", h =>
                 {
                     h.Username("guest");
                     h.Password("guest");

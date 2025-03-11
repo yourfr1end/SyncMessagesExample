@@ -14,6 +14,7 @@ public static class OpenTelemetryExtensions
     public static WebApplicationBuilder AddCustomOpenTelemetry(this WebApplicationBuilder builder, string serviceName)
     {
         var OtlpEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
+        Console.WriteLine("Otlp endpoint: " + OtlpEndpoint);
         builder.Logging.AddOpenTelemetry(logging =>
         {
             logging.IncludeFormattedMessage = true;

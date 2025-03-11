@@ -8,9 +8,11 @@ using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using SyncMessagesExample.Api;
+using SyncMessagesExample.Api.StateMachine;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddEnvironmentVariables();
 
 builder.AddCustomOpenTelemetry("SyncMessagesExample.Api");
 

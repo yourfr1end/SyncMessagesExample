@@ -1,0 +1,90 @@
+﻿services:
+  syncmessagesexample.api:
+    image: syncmessagesexample.api
+    build:
+      context: .
+      dockerfile: SyncMessagesExample.Api/Dockerfile
+    ports:
+      - "5555:80"
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspiredashboard:4317
+    depends_on:
+      - messagebroker-sevice
+      - aspiredashboard
+    networks:
+      - sync-messages-example-network
+
+  messagestatusservice:
+    image: messagestatusservice
+    build:
+      context: .
+      dockerfile: MessageStatusService/Dockerfile
+    ports:
+      - "5556:80"
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspiredashboard:4317
+    depends_on:
+      - messagebroker-sevice
+      - aspiredashboard
+    networks:
+      - sync-messages-example-network
+
+  messagesservice:
+    image: messagesservice
+    build:
+      context: .
+      dockerfile: MessagesService/Dockerfile
+    ports:
+      - "5557:80"
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspiredashboard:4317
+    depends_on:
+      - messagebroker-sevice
+      - aspiredashboard
+    networks:
+      - sync-messages-example-network
+
+  getinstanceinfoservice:
+    image: getinstanceinfoservice
+    build:
+      context: .
+      dockerfile: GetInstanceInfoService/Dockerfile
+    ports:
+      - "5558:80"
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspiredashboard:4317
+    depends_on:
+      - messagebroker-sevice
+      - aspiredashboard
+    networks:
+      - sync-messages-example-network
+
+  aspiredashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
+    hostname: "aspiredashboard"
+    ports:
+      - "18888:18888"
+      - "4317:18889"
+    networks:
+      - sync-messages-example-network
+        
+  messagebroker-sevice:
+    image: rabbitmq:3-management
+    hostname: "messagebroker-sevice"
+    ports:
+      - "4369:4369"
+      - "5671:5671"
+      - "5672:5672"
+      - "25672:25672"
+      - "15671:15671"
+      - "15672:15672"
+    networks:
+      - sync-messages-example-network
+
+networks:
+  sync-messages-example-network:
+    driver: bridge
