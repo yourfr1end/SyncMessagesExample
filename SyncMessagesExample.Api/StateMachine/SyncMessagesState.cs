@@ -10,6 +10,6 @@ public class SyncMessagesState : SagaStateMachineInstance
     public Guid InstanceId { get; set; }
     public DateTime StartSyncing { get; set; }
     public DateTime? EndSyncing { get; set; }
-    public string MessagesStates { get; set; }
+    public string? MessagesStates { get; set; }
     public string? FailedReason { get; set; }
 }

@@ -11,9 +11,11 @@
       - ASPNETCORE_URLS=http://+:80
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspiredashboard:18889
       - RABBITMQ_HOSTNAME=rabbitmqservice
+      - DB_CONNECTION_STRING=User ID=pguser;Password=qweqwe123;Host=db;Port=5432;Database=StateMachineExample;
     depends_on:
       - rabbitmqservice
       - aspiredashboard
+      - db
     networks:
       - sync-messages-example-network
 
@@ -92,6 +94,38 @@
       - "15672:15672"
     networks:
       - sync-messages-example-network
+
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: qweqwe123
+    volumes:
+      - local_pgdata:/var/lib/postgresql/data
+    networks:
+      - sync-messages-example-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: example@example.com
+      PGADMIN_DEFAULT_PASSWORD: qweqwe123
+    depends_on:
+      - db
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - sync-messages-example-network
+
+volumes:
+  local_pgdata:
+  pgadmin-data:
 
 networks:
   sync-messages-example-network:
