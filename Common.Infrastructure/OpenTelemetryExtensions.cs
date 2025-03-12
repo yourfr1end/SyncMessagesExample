@@ -13,17 +13,17 @@ public static class OpenTelemetryExtensions
 {
     public static WebApplicationBuilder AddCustomOpenTelemetry(this WebApplicationBuilder builder, string serviceName)
     {
-        var OtlpEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
-        Console.WriteLine("Otlp endpoint: " + OtlpEndpoint);
+        var otlpEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
+        Console.WriteLine("Otlp endpoint: " + otlpEndpoint);
         builder.Logging.AddOpenTelemetry(logging =>
         {
             logging.IncludeFormattedMessage = true;
             logging.IncludeScopes = true;
             logging.AddOtlpExporter(opt =>
             {
-                if (!string.IsNullOrWhiteSpace(OtlpEndpoint))
+                if (!string.IsNullOrWhiteSpace(otlpEndpoint))
                 {
-                    opt.Endpoint = new Uri(OtlpEndpoint);
+                    opt.Endpoint = new Uri(otlpEndpoint);
                 }
             });
         });
@@ -42,9 +42,9 @@ public static class OpenTelemetryExtensions
 
             metrics.AddOtlpExporter(opt =>
             {
-                if (!string.IsNullOrWhiteSpace(OtlpEndpoint))
+                if (!string.IsNullOrWhiteSpace(otlpEndpoint))
                 {
-                    opt.Endpoint = new Uri(OtlpEndpoint);
+                    opt.Endpoint = new Uri(otlpEndpoint);
                 }
             });
         });
@@ -56,9 +56,9 @@ public static class OpenTelemetryExtensions
             tracing.AddSource(DiagnosticHeaders.DefaultListenerName);
             tracing.AddOtlpExporter(opt =>
             {
-                if (!string.IsNullOrWhiteSpace(OtlpEndpoint))
+                if (!string.IsNullOrWhiteSpace(otlpEndpoint))
                 {
-                    opt.Endpoint = new Uri(OtlpEndpoint);
+                    opt.Endpoint = new Uri(otlpEndpoint);
                 }
             });
         });

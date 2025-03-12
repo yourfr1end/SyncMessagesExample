@@ -7,10 +7,12 @@
     ports:
       - "5555:80"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspiredashboard:4317
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspiredashboard:18889
+      - RABBITMQ_HOSTNAME=rabbitmqservice
     depends_on:
-      - messagebroker-sevice
+      - rabbitmqservice
       - aspiredashboard
     networks:
       - sync-messages-example-network
@@ -23,10 +25,12 @@
     ports:
       - "5556:80"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspiredashboard:4317
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspiredashboard:18889
+      - RABBITMQ_HOSTNAME=rabbitmqservice
     depends_on:
-      - messagebroker-sevice
+      - rabbitmqservice
       - aspiredashboard
     networks:
       - sync-messages-example-network
@@ -39,10 +43,12 @@
     ports:
       - "5557:80"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspiredashboard:4317
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspiredashboard:18889
+      - RABBITMQ_HOSTNAME=rabbitmqservice
     depends_on:
-      - messagebroker-sevice
+      - rabbitmqservice
       - aspiredashboard
     networks:
       - sync-messages-example-network
@@ -55,10 +61,12 @@
     ports:
       - "5558:80"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspiredashboard:4317
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspiredashboard:18889
+      - RABBITMQ_HOSTNAME=rabbitmqservice
     depends_on:
-      - messagebroker-sevice
+      - rabbitmqservice
       - aspiredashboard
     networks:
       - sync-messages-example-network
@@ -71,10 +79,10 @@
       - "4317:18889"
     networks:
       - sync-messages-example-network
-        
-  messagebroker-sevice:
+
+  rabbitmqservice:
     image: rabbitmq:3-management
-    hostname: "messagebroker-sevice"
+    hostname: "rabbitmqservice"
     ports:
       - "4369:4369"
       - "5671:5671"
