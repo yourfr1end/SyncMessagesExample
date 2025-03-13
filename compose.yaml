@@ -98,11 +98,12 @@
   db:
     image: postgres
     restart: always
+    user: postgres
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: pguser
-      POSTGRES_PASSWORD: qweqwe123
+      - POSTGRES_USER=pguser
+      - POSTGRES_PASSWORD=qweqwe123
     volumes:
       - local_pgdata:/var/lib/postgresql/data
     networks:
@@ -114,8 +115,8 @@
     ports:
       - "8888:80"
     environment:
-      PGADMIN_DEFAULT_EMAIL: example@example.com
-      PGADMIN_DEFAULT_PASSWORD: qweqwe123
+      - PGADMIN_DEFAULT_EMAIL=example@example.com
+      - PGADMIN_DEFAULT_PASSWORD=qweqwe123
     depends_on:
       - db
     volumes:
