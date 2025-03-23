@@ -1,0 +1,133 @@
+﻿services:
+  syncmessagesexample.api:
+    image: syncmessagesexample.api
+    build:
+      context: .
+      dockerfile: SyncMessagesExample.Api/Dockerfile
+    ports:
+      - "5555:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspiredashboard:18889
+      - RABBITMQ_HOSTNAME=rabbitmqservice
+      - DB_CONNECTION_STRING=User ID=pguser;Password=qweqwe123;Host=db;Port=5432;Database=StateMachineExample;
+    depends_on:
+      - rabbitmqservice
+      - aspiredashboard
+      - db
+    networks:
+      - sync-messages-example-network
+
+  messagestatusservice:
+    image: messagestatusservice
+    build:
+      context: .
+      dockerfile: MessageStatusService/Dockerfile
+    ports:
+      - "5556:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspiredashboard:18889
+      - RABBITMQ_HOSTNAME=rabbitmqservice
+    depends_on:
+      - rabbitmqservice
+      - aspiredashboard
+    networks:
+      - sync-messages-example-network
+
+  messagesservice:
+    image: messagesservice
+    build:
+      context: .
+      dockerfile: MessagesService/Dockerfile
+    ports:
+      - "5557:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspiredashboard:18889
+      - RABBITMQ_HOSTNAME=rabbitmqservice
+    depends_on:
+      - rabbitmqservice
+      - aspiredashboard
+    networks:
+      - sync-messages-example-network
+
+  getinstanceinfoservice:
+    image: getinstanceinfoservice
+    build:
+      context: .
+      dockerfile: GetInstanceInfoService/Dockerfile
+    ports:
+      - "5558:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspiredashboard:18889
+      - RABBITMQ_HOSTNAME=rabbitmqservice
+    depends_on:
+      - rabbitmqservice
+      - aspiredashboard
+    networks:
+      - sync-messages-example-network
+
+  aspiredashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
+    hostname: "aspiredashboard"
+    ports:
+      - "18888:18888"
+      - "4317:18889"
+    networks:
+      - sync-messages-example-network
+
+  rabbitmqservice:
+    image: rabbitmq:3-management
+    hostname: "rabbitmqservice"
+    ports:
+      - "4369:4369"
+      - "5671:5671"
+      - "5672:5672"
+      - "25672:25672"
+      - "15671:15671"
+      - "15672:15672"
+    networks:
+      - sync-messages-example-network
+
+  db:
+    image: postgres
+    restart: always
+    user: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=pguser
+      - POSTGRES_PASSWORD=qweqwe123
+    volumes:
+      - local_pgdata:/var/lib/postgresql/data
+    networks:
+      - sync-messages-example-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=example@example.com
+      - PGADMIN_DEFAULT_PASSWORD=qweqwe123
+    depends_on:
+      - db
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - sync-messages-example-network
+
+volumes:
+  local_pgdata:
+  pgadmin-data:
+
+networks:
+  sync-messages-example-network:
+    driver: bridge

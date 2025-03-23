@@ -1,15 +1,8 @@
 using System.Reflection;
-using Common.Events;
 using Common.Infrastructure;
 using MassTransit;
-using MassTransit.Logging;
-using MassTransit.Saga;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OpenTelemetry;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 using SyncMessagesExample.Api.StateMachine;
 using SyncMessagesExample.Api.StateMachine.Persistence;
 
@@ -64,7 +57,8 @@ app.UseHttpsRedirection();
 app.MapPost("/start-syncing", (IPublishEndpoint publishEndpoint) =>
     {
         var guid = Guid.NewGuid();
-        publishEndpoint.Publish<ISubmitSync>(new SubmitSync(guid));
+        
+        // TODO: publish start sync event
 
         return Results.Ok(guid);
     })

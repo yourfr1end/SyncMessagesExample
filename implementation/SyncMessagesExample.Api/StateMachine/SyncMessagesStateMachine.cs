@@ -1,4 +1,5 @@
-﻿using Common.Events;
+﻿using System.Text.Json;
+using Common.Events;
 using MassTransit;
 
 namespace SyncMessagesExample.Api.StateMachine;
@@ -74,7 +75,7 @@ public class SyncMessagesStateMachine : MassTransitStateMachine<SyncMessagesStat
             .Then(context =>
             {
                 context.Saga.MessagesStates =
-                    System.Text.Json.JsonSerializer.Serialize(context.Message.Statuses);
+                    JsonSerializer.Serialize(context.Message.Statuses);
             })
             .PublishAsync(context =>
                 context.Init<IUpdateMessages>(new UpdateMessages(context.Message.InstanceId,
